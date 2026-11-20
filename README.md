@@ -6,8 +6,9 @@ Un éditeur et lecteur Markdown natif pour macOS, rapide et léger, écrit en **
 
 ## 📥 Téléchargement (Download)
 Vous ne souhaitez pas compiler le code ? Téléchargez directement la dernière version :
-* **[👉 Télécharger cactMD (.zip)](https://github.com/traxqlf/cactMD/releases/latest)**
-* Les mises à jour suivantes sont proposées automatiquement dans l'app (menu **cactMD › Rechercher des mises à jour…**, Sparkle 2).
+* **[👉 Télécharger l'installeur macOS (.dmg)](https://github.com/traxqlf/cactMD/releases/latest)** — Apple Silicon, macOS 14+
+
+**Installation :** ouvrez le `.dmg`, glissez **cactMD** dans le dossier **Applications**, puis lancez-le. Les mises à jour suivantes sont proposées automatiquement dans l'app (menu **cactMD › Rechercher des mises à jour…**, Sparkle 2).
 
 ## ⚠️ Note importante
 cactMD n'est pas signé avec un certificat Developer ID ni notarisé par Apple. Au premier lancement, macOS peut afficher « cactMD ne peut pas être ouvert car Apple ne peut pas vérifier… » :
@@ -15,7 +16,7 @@ cactMD n'est pas signé avec un certificat Developer ID ni notarisé par Apple. 
 2. Descendez jusqu'au message concernant cactMD et cliquez sur **Ouvrir quand même**.
 3. Confirmez avec **Ouvrir**.
 
-*(Cette manipulation n'est à faire qu'au tout premier lancement.)*
+*(Cette manipulation n'est à faire qu'au tout premier lancement, et se répète après chaque mise à jour.)*
 
 ---
 
@@ -80,7 +81,7 @@ Pour compiler et exécuter ce projet depuis le code source :
    ```bash
    ./scripts/release.sh 1.0.1
    ```
-   Le script incrémente `CFBundleVersion`, met à jour `CFBundleShortVersionString`, produit `dist/cactMD-1.0.1.zip` et `dist/appcast.xml`. Il reste à joindre ces deux fichiers à une release GitHub taguée `v1.0.1`.
+   Le script incrémente `CFBundleVersion`, met à jour `CFBundleShortVersionString`, produit l'installeur `dist/cactMD-1.0.1.dmg`, l'archive Sparkle `dist/cactMD-1.0.1.zip` et l'appcast signé `dist/appcast.xml`. Il reste à joindre ces trois fichiers à une release GitHub taguée `v1.0.1`.
 
 <br>
 <br>
@@ -93,8 +94,9 @@ A fast, lightweight native Markdown editor and reader for macOS, written in **Sw
 
 ## 📥 Download
 Don't want to compile the code? Grab the latest release directly:
-* **[👉 Download cactMD (.zip)](https://github.com/traxqlf/cactMD/releases/latest)**
-* Later updates are offered automatically (menu **cactMD › Check for Updates…**, Sparkle 2).
+* **[👉 Download the macOS installer (.dmg)](https://github.com/traxqlf/cactMD/releases/latest)** — Apple Silicon, macOS 14+
+
+**Install:** open the `.dmg`, drag **cactMD** into **Applications**, then launch it. Later updates are offered automatically (menu **cactMD › Check for Updates…**, Sparkle 2).
 
 ## ⚠️ Important Note (macOS Gatekeeper)
 cactMD is not signed with a Developer ID certificate and is not notarized by Apple. On first launch macOS may say the app cannot be opened because Apple cannot check it for malicious software:
@@ -102,7 +104,7 @@ cactMD is not signed with a Developer ID certificate and is not notarized by App
 2. Scroll down to the cactMD notice and click **Open Anyway**.
 3. Confirm with **Open**.
 
-*(You only need to do this the very first time you run the app.)*
+*(You only need to do this on the very first launch, and again after each update.)*
 
 ---
 
@@ -167,4 +169,4 @@ To build and run this project from the source code, you will need:
    ```bash
    ./scripts/release.sh 1.0.1
    ```
-   The script bumps `CFBundleVersion`, updates `CFBundleShortVersionString`, and produces `dist/cactMD-1.0.1.zip` and `dist/appcast.xml`. Attach both files to a GitHub release tagged `v1.0.1`.
+   The script bumps `CFBundleVersion`, updates `CFBundleShortVersionString`, and produces the installer `dist/cactMD-1.0.1.dmg`, the Sparkle archive `dist/cactMD-1.0.1.zip` and the signed `dist/appcast.xml`. Attach all three files to a GitHub release tagged `v1.0.1`.

@@ -5,8 +5,13 @@
 #   ./scripts/release.sh 1.0.1
 #
 # Étapes : incrémente CFBundleVersion, met à jour CFBundleShortVersionString,
-# compile en Release, fabrique ./dist/cactMD-<version>.zip puis signe et
-# régénère ./dist/appcast.xml avec l'outil generate_appcast livré par Sparkle.
+# compile en Release, fabrique ./dist/cactMD-<version>.dmg (installeur) et
+# ./dist/cactMD-<version>.zip (mise à jour Sparkle), puis signe et régénère
+# ./dist/appcast.xml avec l'outil generate_appcast livré par Sparkle.
+#
+# Les archives Sparkle vivent dans ./dist/sparkle/ : generate_appcast refuse un
+# .zip et un .dmg de la même version dans un même dossier, et il lui faut
+# l'historique pour les mises à jour différentielles.
 #
 # La clé privée EdDSA doit être dans le trousseau sous le compte « cactMD »
 # (créée une fois avec `generate_keys --account cactMD`) ; la clé publique
@@ -32,6 +37,8 @@ TARGET="MyApp"
 SCHEME="MyApp"
 APP_NAME="cactMD"
 DIST="$ROOT/dist"
+# Dossier de travail de Sparkle (zips + appcast.xml, historique conservé).
+SPARKLE_DIR="$DIST/sparkle"
 # Les archives de release publiques sont nommées d'après le tag v<version>.
 DOWNLOAD_URL_PREFIX="${CACTMD_DOWNLOAD_URL_PREFIX:-https://github.com/traxqlf/cactMD/releases/download/v${VERSION}/}"
 
@@ -66,10 +73,20 @@ if [[ "$built_version" != "$VERSION" || "$built_build" != "$next_build" ]]; then
     exit 1
 fi
 
-echo "==> Archive ./dist/${APP_NAME}-${VERSION}.zip"
-mkdir -p "$DIST"
-rm -f "$DIST/${APP_NAME}-${VERSION}.zip"
-ditto -c -k --sequesterRsrc --keepParent "$APP" "$DIST/${APP_NAME}-${VERSION}.zip"
+mkdir -p "$DIST" "$SPARKLE_DIR"
+
+echo "==> Archive Sparkle ./dist/sparkle/${APP_NAME}-${VERSION}.zip"
+rm -f "$SPARKLE_DIR/${APP_NAME}-${VERSION}.zip"
+ditto -c -k --sequesterRsrc --keepParent "$APP" "$SPARKLE_DIR/${APP_NAME}-${VERSION}.zip"
+
+echo "==> Installeur ./dist/${APP_NAME}-${VERSION}.dmg"
+STAGE="$(mktemp -d)"
+trap 'rm -rf "$STAGE"' EXIT
+ditto "$APP" "$STAGE/${APP_NAME}.app"
+ln -s /Applications "$STAGE/Applications"
+rm -f "$DIST/${APP_NAME}-${VERSION}.dmg"
+hdiutil create -quiet -volname "$APP_NAME" -srcfolder "$STAGE" \
+    -ov -format UDZO "$DIST/${APP_NAME}-${VERSION}.dmg"
 
 GENERATE_APPCAST="$(command -v generate_appcast || true)"
 if [[ -z "$GENERATE_APPCAST" ]]; then
@@ -82,6 +99,13 @@ if [[ -z "$GENERATE_APPCAST" ]]; then
 fi
 
 echo "==> Signature de l'appcast"
-"$GENERATE_APPCAST" --account cactMD --download-url-prefix "$DOWNLOAD_URL_PREFIX" "$DIST"
+"$GENERATE_APPCAST" --account cactMD --download-url-prefix "$DOWNLOAD_URL_PREFIX" "$SPARKLE_DIR"
 
-echo "==> Terminé : $DIST/${APP_NAME}-${VERSION}.zip et $DIST/appcast.xml"
+# Copie des fichiers à joindre à la release GitHub (le dossier sparkle/ reste local).
+cp "$SPARKLE_DIR/${APP_NAME}-${VERSION}.zip" "$DIST/${APP_NAME}-${VERSION}.zip"
+cp "$SPARKLE_DIR/appcast.xml" "$DIST/appcast.xml"
+
+echo "==> Terminé. À joindre à la release GitHub :"
+echo "    $DIST/${APP_NAME}-${VERSION}.dmg"
+echo "    $DIST/${APP_NAME}-${VERSION}.zip"
+echo "    $DIST/appcast.xml"

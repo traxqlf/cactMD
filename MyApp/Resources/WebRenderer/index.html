@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root { color-scheme: light dark;
+  --bg:#ffffff; --text-normal:#222222; --text-muted:#6b6b6b; --text-faint:#8e8e93;
+  --link:#7c3aed; --link-underline:rgba(124,58,237,0.35);
+  --code-bg:#f7f7f8; --code-inline-bg:#f2f2f3; --code-inline-text:#222222;
+  --table-border:#e5e7eb; --table-header:#f8f9fa; --blockquote-border:#d1d5db;
+  --guide:#e5e5e5;
+  --kw:#d63384; --fn:#b87a00; --prop:#0284c7; --str:#16a34a; --com:#8e8e93; --num:#b87a00; --op:#444444; --punct:#666666;
+}
+@media (prefers-color-scheme: dark){
+/* `force-light` is set by the PDF export: a printed page is white even when the
+   app is in dark mode, so the dark palette must not apply. */
+:root:not(.force-light){
+  --bg:#1e1e1e; --text-normal:#dadada; --text-muted:#a0a0a0; --text-faint:#8e8e93;
+  --link:#a78bfa; --link-underline:rgba(167,139,250,0.4);
+  --code-bg:#262626; --code-inline-bg:#2c2c2e; --code-inline-text:#e5e5e5;
+  --table-border:#333333; --table-header:#252526; --blockquote-border:#4b5563;
+  --guide:#363636;
+  --kw:#ff79c6; --fn:#e5c07b; --prop:#56b6c2; --str:#98c379; --com:#8e8e93; --num:#e5c07b; --op:#dadada; --punct:#a0a0a0;
+}}
+*{box-sizing:border-box;}
+html,body{width:100%;max-width:100%;overflow-x:hidden;margin:0;padding:0;background:var(--bg);color:var(--text-normal);}
+body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Text",sans-serif;font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.markdown-preview-view{width:100%;max-width:700px;margin:0 auto;padding:36px clamp(24px,5vw,48px) 80px;box-sizing:border-box;}
+/* Finder hidden: the freed width widens the reading column, still leaving
+   ~180 pt of breathing room on each side. */
+body.sidebar-hidden .markdown-preview-view{max-width:clamp(700px,calc(100% - 360px),960px);}
+
+.note-title{font-size:1.85em;font-weight:700;color:var(--text-normal);margin:0 0 0.6em 0;line-height:1.25;}
+h1,h2,h3,h4,h5,h6{color:var(--text-normal);font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;line-height:1.3;margin:1.4em 0 0.45em;border:none;text-decoration:none;}
+h1{font-size:1.65em;font-weight:700;} h2{font-size:1.35em;font-weight:600;} h3{font-size:1.15em;font-weight:600;} h4{font-size:1.02em;font-weight:600;}
+p{margin:0 0 1em;}
+p,li,blockquote,h1,h2,h3,h4{overflow-wrap:break-word;word-wrap:break-word;max-width:100%;}
+a{color:var(--link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;text-decoration-color:var(--link-underline);}
+a:hover{text-decoration-color:var(--link);} a.external-link::after{content:" ↗";font-size:0.85em;color:var(--text-faint);text-decoration:none;display:inline-block;}
+strong{font-weight:600;} em{font-style:italic;}
+
+:not(pre)>code{font-family:"SF Mono",Menlo,monospace;font-size:0.88em;background:var(--code-inline-bg);color:var(--code-inline-text);border:none;border-radius:4px;padding:2px 6px;}
+pre{position:relative;margin:16px 0;background:var(--code-bg);border:none;border-radius:6px;padding:16px 20px;max-width:100%;overflow:hidden;}
+pre .code-header{position:absolute;top:10px;right:12px;display:flex;align-items:center;gap:8px;z-index:2;}
+.code-lang{font-size:12px;color:#888888;font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;line-height:1;user-select:none;}
+.code-copy{opacity:0;transition:opacity .12s,color .12s,border-color .12s;background:transparent;color:#888888;border:1px solid transparent;border-radius:4px;padding:2px 5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;}
+pre:hover .code-copy{opacity:1;} .code-copy:hover{color:var(--text-normal);background:rgba(127,127,127,0.08);} .code-copy.copied{color:#22c55e;opacity:1;}
+pre code{display:block;background:transparent;border:none;padding:0;margin:0;font-family:"SF Mono",Menlo,monospace;font-size:13.5px;line-height:1.55;color:var(--text-normal);white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;}
+pre.has-lang code{padding-top:4px;}
+/* indentation guides: 2 spaces per level, aligned to monospace advance */
+pre code.indent-guides{
+  background-image: repeating-linear-gradient(to right, var(--guide) 0, var(--guide) 1px, transparent 1px, transparent 2ch);
+  background-position: 0 0;
+  background-attachment: local;
+}
+
+blockquote{margin:0 0 1em;padding:0 0 0 14px;border-left:2px solid var(--blockquote-border);color:var(--text-muted);}
+blockquote> :first-child{margin-top:0.2em;} blockquote> :last-child{margin-bottom:0.2em;}
+
+hr{border:none;border-top:1px solid var(--table-border);margin:1.6em 0;}
+ul,ol{margin:0 0 1em;padding-left:1.6em;} li{margin:0.25em 0;} li>p{margin:0.2em 0;}
+ul.contains-task-list{list-style:none;padding-left:0.2em;} li.task-list-item{list-style:none;display:flex;align-items:flex-start;gap:0.55em;}
+.task-list-item-checkbox{appearance:none;-webkit-appearance:none;width:15px;height:15px;min-width:15px;margin-top:0.3em;border:1.5px solid var(--text-faint);border-radius:3px;background:transparent;cursor:pointer;position:relative;}
+.task-list-item-checkbox:checked{background:var(--link);border-color:var(--link);}
+.task-list-item-checkbox:checked::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.is-checked .task-list-item-content{color:var(--text-muted);text-decoration:line-through;}
+
+.table-wrapper{width:100%;max-width:100%;overflow-x:hidden;margin:1em 0;}
+table{border-collapse:collapse;width:100%;max-width:100%;table-layout:fixed;margin:0;font-size:0.95em;}
+th,td{border:1px solid var(--table-border);padding:7px 12px;text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere;word-break:break-word;}
+th{background:var(--table-header);font-weight:600;color:var(--text-normal);}
+
+.frontmatter-container{margin:0 0 1.2em;border:1px solid var(--table-border);border-radius:6px;background:transparent;}
+.frontmatter-container summary{list-style:none;cursor:pointer;padding:8px 12px;font-size:0.88em;color:var(--text-muted);display:flex;align-items:center;gap:6px;user-select:none;}
+.frontmatter-container summary::-webkit-details-marker{display:none;}
+.fm-caret{transition:transform .15s;display:inline-block;font-size:0.75em;} .frontmatter-container[open] .fm-caret{transform:rotate(90deg);}
+.frontmatter-body{padding:4px 12px 10px;border-top:1px solid var(--table-border);}
+.fm-row{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;padding:3px 0;}
+.fm-key{font-size:0.85em;color:var(--text-muted);} .fm-value{font-size:0.9em;color:var(--text-normal);}
+
+img{max-width:100%;height:auto;border-radius:4px;display:block;margin:0.8em 0;}
+.embedded-backlinks{margin-top:2.2em;padding-top:1em;border-top:1px solid var(--table-border);}
+.embedded-backlinks h3{font-size:0.9em;font-weight:600;color:var(--text-muted);margin:0 0 0.4em;}
+.backlink-item{display:block;padding:3px 0;color:var(--text-normal);} .backlink-item .path{color:var(--text-faint);font-size:0.8em;margin-left:8px;}
+
+/* Prism palette (Obsidian-like from capture) */
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:var(--com);}
+.token.punctuation{color:var(--punct);}
+.token.keyword,.token.atrule,.token.important,.token.selector,.token.tag{color:var(--kw);}
+.token.function,.token.class-name,.token.method,.token.builtin{color:var(--fn);}
+.token.property,.token.attr-name,.token.parameter,.token.variable,.token.constant,.token.symbol{color:var(--prop);}
+.token.string,.token.char,.token.attr-value,.token.regex,.token.inserted{color:var(--str);}
+.token.number,.token.boolean{color:var(--num);}
+.token.operator,.token.entity,.token.url{color:var(--op);}
+.token.deleted{color:var(--kw);}
+.language-bash .token.function,.language-bash .token.keyword,.language-shell .token.function{color:var(--kw);} /* sudo, if, etc */
+.language-bash .token.parameter,.language-bash .token.option,.language-bash .token.assign-left{color:var(--prop);} /* --flags */
+.language-bash .token.string{color:var(--str);}
+</style>
+</head>
+<body>
+<div id="content" class="markdown-preview-view"></div>
+<script src="prism.min.js"></script>
+<script src="prism-clike.min.js"></script>
+<script src="prism-markup.min.js"></script>
+<script src="prism-markup-templating.min.js"></script>
+<script src="prism-bash.min.js"></script>
+<script src="prism-c.min.js"></script>
+<script src="prism-cpp.min.js"></script>
+<script src="prism-css.min.js"></script>
+<script src="prism-javascript.min.js"></script>
+<script src="prism-typescript.min.js"></script>
+<script src="prism-json.min.js"></script>
+<script src="prism-python.min.js"></script>
+<script src="prism-sql.min.js"></script>
+<script src="prism-swift.min.js"></script>
+<script src="prism-yaml.min.js"></script>
+<script>
+const copyIcon='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+const checkIcon='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+function enhance(root){
+  if(window.Prism){Prism.highlightAllUnder(root);}
+  root.querySelectorAll('pre code').forEach(code=>{
+    const text = code.textContent || '';
+    if(/^(?:[ \t]+)/m.test(text) || text.includes('\n  ')) code.classList.add('indent-guides');
+  });
+}
+/* Finder hidden ⇔ the freed width widens the reading column. The app pushes
+   the state at mount and on every visibility change. */
+function setSidebarHidden(hidden){
+  document.body.classList.toggle('sidebar-hidden', !!hidden);
+}
+function setForceLight(on){
+  document.documentElement.classList.toggle('force-light', !!on);
+}
+/* `keepScroll` is set when the same note is re-rendered (a checkbox toggle,
+   a tag change): the page must not jump back to the top. A different note
+   starts at the beginning. */
+function setContent(html, keepScroll){
+  const el=document.getElementById('content');
+  const y = window.scrollY || 0;
+  el.innerHTML=html||'';
+  enhance(el);
+  lastHeadingId = null;
+  window.scrollTo(0, keepScroll ? y : 0);
+  scheduleActiveHeading();
+}
+/* Outline → page: the heading carries the block id assigned by the parser. */
+function scrollToHeading(id){
+  const el=document.querySelector('[data-heading-id="'+id+'"]');
+  if(!el) return false;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+  return true;
+}
+let lastHeadingId=null;
+let headingFrame=0;
+function scheduleActiveHeading(){
+  if(!headingFrame) headingFrame=requestAnimationFrame(reportActiveHeading);
+}
+/* Reports the section the top of the viewport is in, so the outline can
+   highlight it while the reader scrolls. */
+function reportActiveHeading(){
+  headingFrame=0;
+  const headings=document.querySelectorAll('[data-heading-id]');
+  let current=null;
+  for(const heading of headings){
+    if(heading.getBoundingClientRect().top<=90) current=heading; else break;
+  }
+  const id=current?current.getAttribute('data-heading-id'):'';
+  if(id===lastHeadingId) return;
+  lastHeadingId=id;
+  if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.heading){
+    window.webkit.messageHandlers.heading.postMessage(id);
+  }
+}
+window.addEventListener('scroll',scheduleActiveHeading,{passive:true});
+async function copyCode(btn){
+  const pre=btn.closest('pre'); const code=pre?pre.querySelector('code'):null; const text=code?code.innerText:'';
+  try{
+    if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.copy){window.webkit.messageHandlers.copy.postMessage(text);} else if(navigator.clipboard){await navigator.clipboard.writeText(text);}
+  }catch(e){}
+  btn.innerHTML=checkIcon; btn.classList.add('copied');
+  setTimeout(()=>{btn.innerHTML=copyIcon; btn.classList.remove('copied');},1200);
+}
+document.addEventListener('click',function(e){
+  const copyBtn=e.target.closest('.code-copy');
+  if(copyBtn){e.preventDefault(); copyCode(copyBtn); return;}
+  const a=e.target.closest('a'); if(!a) return; const href=a.getAttribute('href'); if(!href) return;
+  if(href.startsWith('systemmd://')){e.preventDefault(); if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.link){window.webkit.messageHandlers.link.postMessage(href);} return;}
+  if(/^https?:/i.test(href)){e.preventDefault(); if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.openExternal){window.webkit.messageHandlers.openExternal.postMessage(href);} else {window.open(href,'_blank');}}
+});
+setSidebarHidden(false);
+document.addEventListener('change',function(e){const cb=e.target; if(!cb||!cb.classList.contains('task-list-item-checkbox')) return; const line=cb.getAttribute('data-line'); if(line&&window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.checkbox){window.webkit.messageHandlers.checkbox.postMessage(line);}});
+</script>
+</body>
+</html>

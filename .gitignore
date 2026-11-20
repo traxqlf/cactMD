@@ -1,0 +1,12 @@
+# Xcode
+build/
+build-release/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Artefacts de publication (attachés à la release GitHub, pas versionnés)
+dist/
+
+# macOS
+.DS_Store
